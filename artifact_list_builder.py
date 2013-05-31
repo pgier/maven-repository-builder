@@ -52,7 +52,7 @@ class ArtifactListBuilder:
             elif source['type'] == 'artifacts':
                 logging.info("Building artifact list from list of artifacts")
                 artifacts = self._listArtifacts(source['repo-url'],
-                                                self._parseDepList(source['included-gavs']))
+                                                self._parseDepList(source['example-config/included-gavs']))
             else:
                 logging.warning("Unsupported source type: %s", source['type'])
                 continue
