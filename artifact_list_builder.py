@@ -1,5 +1,4 @@
 import os
-import koji
 import re
 import maven_repo_util as mrbutils
 import logging
@@ -8,6 +7,11 @@ from subprocess import PIPE
 from subprocess import call
 from maven_artifact import MavenArtifact
 from download import fetchArtifact
+
+try:
+    import koji
+except ImportError:
+    print "Unable to import koji lib, related features will be unavailable"
 
 
 class ArtifactListBuilder:
