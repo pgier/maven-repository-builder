@@ -43,22 +43,21 @@ def downloadArtifacts(remoteRepoUrl, localRepoDir, artifact, classifiers, checks
         artifactLocalPath = os.path.join(localRepoDir, artifact.getArtifactFilepath())
         maven_repo_util.fetchFile(artifactUrl, artifactLocalPath, checksumMode, True, True, filesetLock, fileset)
 
-        if not artifact.getClassifier():
-            # Download pom if the main type is not pom
-            if artifact.getArtifactFilename() != artifact.getPomFilename():
-                artifactPomUrl = remoteRepoUrl + artifact.getPomFilepath()
-                artifactPomLocalPath = os.path.join(localRepoDir, artifact.getPomFilepath())
-                maven_repo_util.fetchFile(artifactPomUrl, artifactPomLocalPath, checksumMode, True, True, filesetLock,
-                                          fileset)
+        # Download pom if the main type is not pom
+        if artifact.getArtifactFilename() != artifact.getPomFilename():
+            artifactPomUrl = remoteRepoUrl + artifact.getPomFilepath()
+            artifactPomLocalPath = os.path.join(localRepoDir, artifact.getPomFilepath())
+            maven_repo_util.fetchFile(artifactPomUrl, artifactPomLocalPath, checksumMode, True, True, filesetLock,
+                                      fileset)
 
-                # Download additional classifiers (only for non-pom artifacts)
-                for classifier in classifiers:
-                    artifactClassifierUrl = remoteRepoUrl + artifact.getClassifierFilepath(classifier)
-                    if maven_repo_util.urlExists(artifactClassifierUrl):
-                        artifactClassifierLocalPath = os.path.join(
-                            localRepoDir, artifact.getClassifierFilepath(classifier))
-                        maven_repo_util.fetchFile(artifactClassifierUrl, artifactClassifierLocalPath, checksumMode,
-                                                  True, True, filesetLock, fileset)
+            # Download additional classifiers (only for non-pom artifacts)
+            for classifier in classifiers:
+                artifactClassifierUrl = remoteRepoUrl + artifact.getClassifierFilepath(classifier)
+                if maven_repo_util.urlExists(artifactClassifierUrl):
+                    artifactClassifierLocalPath = os.path.join(
+                        localRepoDir, artifact.getClassifierFilepath(classifier))
+                    maven_repo_util.fetchFile(artifactClassifierUrl, artifactClassifierLocalPath, checksumMode,
+                                              True, True, filesetLock, fileset)
     except BaseException as ex:
         logging.error("Error while downloading artifact %s: %s", artifact, str(ex))
         errors.put(ex)
@@ -72,20 +71,19 @@ def copyArtifact(remoteRepoPath, localRepoDir, artifact, classifiers, checksumMo
     if os.path.exists(artifactPath) and not os.path.exists(artifactLocalPath):
         maven_repo_util.fetchFile(artifactPath, artifactLocalPath, checksumMode)
 
-    if not artifact.getClassifier():
-        # Copy pom if the main type is not pom
-        if artifact.getArtifactFilename() != artifact.getPomFilename():
-            artifactPomPath = os.path.join(remoteRepoPath, artifact.getPomFilepath())
-            artifactPomLocalPath = os.path.join(localRepoDir, artifact.getPomFilepath())
-            if os.path.exists(artifactPomPath) and not os.path.exists(artifactPomLocalPath):
-                maven_repo_util.fetchFile(artifactPomPath, artifactPomLocalPath, checksumMode)
+    # Copy pom if the main type is not pom
+    if artifact.getArtifactFilename() != artifact.getPomFilename():
+        artifactPomPath = os.path.join(remoteRepoPath, artifact.getPomFilepath())
+        artifactPomLocalPath = os.path.join(localRepoDir, artifact.getPomFilepath())
+        if os.path.exists(artifactPomPath) and not os.path.exists(artifactPomLocalPath):
+            maven_repo_util.fetchFile(artifactPomPath, artifactPomLocalPath, checksumMode)
 
-            # Copy additional classifiers (only for non-pom artifacts)
-            for classifier in classifiers:
-                artifactClassifierPath = os.path.join(remoteRepoPath, artifact.getClassifierFilepath(classifier))
-                artifactClassifierLocalPath = os.path.join(localRepoDir, artifact.getClassifierFilepath(classifier))
-                if os.path.exists(artifactClassifierPath) and not os.path.exists(artifactClassifierLocalPath):
-                    maven_repo_util.fetchFile(artifactClassifierPath, artifactClassifierLocalPath, checksumMode)
+        # Copy additional classifiers (only for non-pom artifacts)
+        for classifier in classifiers:
+            artifactClassifierPath = os.path.join(remoteRepoPath, artifact.getClassifierFilepath(classifier))
+            artifactClassifierLocalPath = os.path.join(localRepoDir, artifact.getClassifierFilepath(classifier))
+            if os.path.exists(artifactClassifierPath) and not os.path.exists(artifactClassifierLocalPath):
+                maven_repo_util.fetchFile(artifactClassifierPath, artifactClassifierLocalPath, checksumMode)
 
 
 def depListToArtifactList(depList):
